@@ -15,7 +15,7 @@ sub file_exists_ok($a as Str, $msg as Str) {
 }
 
 file_exists_ok "$dest/lib/foo.pm", 'module installed';
-file_exists_ok "$dest/lib/foo.{compsuffix}",  "{compsuffix} installed";
+file_exists_ok "$dest/lib/foo.{compsuffix}", 'module compiled';
 file_exists_ok "$dest/lib/bar.pod", 'pod installed';
 file_exists_ok "$dest/lib/baz.js", 'random files installed';
 file_exists_ok "$dest/bin/bar", 'bin installed';

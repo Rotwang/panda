@@ -34,8 +34,9 @@ method install($from, $to? is copy) {
         $to = $.destdir
     }
     indir $from, {
+	my @lib;
         if 'blib'.IO ~~ :d {
-            my @lib = find(dir => 'blib', type => 'file').list;
+            @lib = find(dir => 'blib', type => 'file').list;
             for self.sort-lib-contents(@lib) -> $i {
                 next if $i.basename.substr(0, 1) eq '.';
                 # .substr(5) to skip 'blib/'
@@ -52,6 +53,17 @@ method install($from, $to? is copy) {
                 "$to/$bin".IO.chmod(0o755) unless $*OS eq 'MSWin32';
             }
         }
+	indir $to, {
+		for @lib.grep(/'.'pm6?$/)».substr(5) -> $pm {
+			my $pir;
+			($pir = $pm) ~~ s/ '.'pm6?$ /.pir/;
+			say "Compiling $pm to {compsuffix}";
+			shell "$*EXECUTABLE_NAME --target={compsuffix} "
+				~ "--output=$pir $pm"
+				or fail "Failed building $pir";
+		}
+		1;
+	};
         1;
     };
 }
